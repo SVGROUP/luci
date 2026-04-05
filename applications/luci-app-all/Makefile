@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=all SV-wrt need software
-LUCI_DEPENDS:=+luci-app-wol +luci-app-aliddns +luci +nginx-all-module +openssh-client +openssh-server +openssh-sftp-server +openssh-sftp-client
+LUCI_DEPENDS:=+luci-app-wol +luci-app-aliddns +luci +nginx-full +openssh-client +openssh-server +openssh-sftp-server +openssh-sftp-client
 PKG_NAME:=luci-app-all
 
 include ../../luci.mk
