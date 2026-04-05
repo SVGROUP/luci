@@ -1,0 +1,75 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2020 Lienol <lawlienol@gmail.com>
+
+START=98
+
+CONFIG=aliddns
+RUN_SCRIPT="/usr/ddns/run.sh"
+LOG_DIR="/usr/ddns/log"
+
+run_service() {
+	config_get AccessKeyId "settings" AccessKeyId
+	[ -z "$AccessKeyId" ] && return 0
+	config_get AccessKeySecret "settings" AccessKeySecret
+	[ -z "$AccessKeySecret" ] && return 0
+	config_get TTL "settings" TTL
+	config_get DnsServer "settings" DnsServer
+	config_get UrlName "settings" UrlName
+
+	config_get Subdomain $1 Subdomain
+	config_get Domain $1 Domain
+	config_get Iptype $1 Iptype
+
+	config_get Subdomain $1 Subdomain
+	config_get Domain $1 Domain
+	LOG_FILE="$LOG_DIR/${Subdomain}.${Domain}.log"
+	echo "/bin/bash /usr/ddns/ddns.sh $AccessKeyId $AccessKeySecret $Subdomain $Domain $Iptype $TTL $DnsServer $UrlName" >> $RUN_SCRIPT
+}
+
+start() {
+	mkdir -p $LOG_DIR
+
+	echo '#!/bin/bash' > $RUN_SCRIPT
+	echo '# Auto-generated DDNS execution script' >> $RUN_SCRIPT
+	echo '# Generated at: '"$(date)" >> $RUN_SCRIPT
+	echo '' >> $RUN_SCRIPT
+	echo '/bin/bash /usr/ddns/update.sh' >> $RUN_SCRIPT
+	echo 'sleep 1' >> $RUN_SCRIPT
+
+	config_load $CONFIG
+
+	config_get AccessKeyId "settings" AccessKeyId
+	if [ -z "$AccessKeyId" ]; then
+		echo "echo \"Warning: AccessKeyId not configured, skipping DDNS\"" >> $RUN_SCRIPT
+	else
+		config_foreach run_service "domain"
+	fi
+
+	chmod +x $RUN_SCRIPT
+	
+
+	temp_file="/tmp/crontab_$$"
+	crontab -l 2>/dev/null | grep -v "$RUN_SCRIPT" | grep -v "/usr/nginx/checkpppoe.sh" > $temp_file
+	config_get CronStart "settings" CronStart
+	[ -z "$CronStart" ] && CronStart=0
+	echo "${CronStart}/5 * * * * /bin/bash $RUN_SCRIPT" >> $temp_file
+	echo "*/5 * * * * /bin/bash /usr/nginx/checkpppoe.sh" >> $temp_file
+	crontab $temp_file
+	rm -f $temp_file
+}
+
+stop() {
+	crontab -l 2>/dev/null | grep -v "$RUN_SCRIPT" | crontab -
+}
+
+restart() {
+	start
+}
+
+enable() {
+	start
+}
+
+disable() {
+	stop
+}

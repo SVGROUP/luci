@@ -1,0 +1,62 @@
+msgid "Aliyun DDNS Tool"
+msgstr ""
+
+msgid "Global Settings"
+msgstr ""
+
+msgid "AccessKeyId"
+msgstr ""
+
+msgid "Aliyun Access Key ID for all domains."
+msgstr ""
+
+msgid "AccessKeySecret"
+msgstr ""
+
+msgid "Aliyun Access Key Secret for all domains."
+msgstr ""
+
+msgid "TTL"
+msgstr ""
+
+msgid "Time to Live in seconds (default: 600)."
+msgstr ""
+
+msgid "Dns Server"
+msgstr ""
+
+msgid "Type in resolve domain dnsserver."
+msgstr ""
+
+msgid "URL Name"
+msgstr ""
+
+msgid "Callback URL for notifications."
+msgstr ""
+
+msgid "Start Minute"
+msgstr ""
+
+msgid "Set the starting minute for crontab task cycling, range 0-59"
+msgstr ""
+
+msgid "Domain Configurations"
+msgstr ""
+
+msgid "Subdomain"
+msgstr ""
+
+msgid "Choose a resolve subdomain."
+msgstr ""
+
+msgid "Domain"
+msgstr ""
+
+msgid "Choose a resolve domain."
+msgstr ""
+
+msgid "IP type."
+msgstr ""
+
+msgid "Choose a resolve IP type."
+msgstr ""
