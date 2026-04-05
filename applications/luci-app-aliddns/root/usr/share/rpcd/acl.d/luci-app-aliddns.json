@@ -1,0 +1,17 @@
+{
+	"luci-app-aliddns": {
+		"description": "Grant UCI access for luci-app-aliddns",
+		"read": {
+			"uci": [ "aliddns" ]
+		},
+		"write": {
+			"file": {
+				"/etc/init.d/aliddns start" : [ "exec" ]
+			},
+			"ubus": {
+				"file": [ "exec", "write" ]
+			},
+			"uci": [ "aliddns" ]
+		}
+	}
+}
