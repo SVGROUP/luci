@@ -7,8 +7,6 @@
 /*
 	button handling
 */
-let errMsg = false;
-
 function handleAction(report, ev) {
 	if (ev === 'search') {
 		ui.showModal(_('IP Search'), [
@@ -53,12 +51,12 @@ function handleAction(report, ev) {
 								clearInterval(window._banipPoller);
 								window._banipPoller = null;
 							}
-							L.resolveDefault(fs.write('/var/run/banIP.search', ''), '').then(function () {
+							L.resolveDefault(fs.write('/var/run/banIP/banIP.search', ''), '').then(function () {
 								L.resolveDefault(fs.exec_direct('/etc/init.d/banip', ['search', ip]), '').then(function () {
 									let attempts = 0;
 									window._banipPoller = setInterval(function () {
 										attempts++;
-										L.resolveDefault(fs.read('/var/run/banIP.search'), '').then(function (res) {
+										L.resolveDefault(fs.read('/var/run/banIP/banIP.search'), '').then(function (res) {
 											if (res && res.trim()) {
 												clearInterval(window._banipPoller);
 												window._banipPoller = null;
@@ -83,6 +81,7 @@ function handleAction(report, ev) {
 	}
 	if (ev === 'content') {
 		let content, selectOption;
+		let errMsg = false;
 
 		if (report[1]) {
 			try {
@@ -359,22 +358,27 @@ return view.extend({
 						});
 						btn.blur();
 						btn.classList.add('spinning');
-						L.resolveDefault(fs.write('/var/run/banIP.report', ''), '').then(function () {
+						L.resolveDefault(fs.write('/var/run/banIP/banIP.report', ''), '').then(function () {
 							L.resolveDefault(fs.exec_direct('/etc/init.d/banip', ['report', 'gen']), '');
 							let attempts = 0;
 							let poller = setInterval(function () {
-								attempts++;
-								L.resolveDefault(fs.read('/var/run/banIP.report'), '').then(function (res) {
-									if (res && res.trim()) {
+								L.resolveDefault(fs.read('/var/run/banIP/banIP.report'), '').then(function (res) {
+									res = (res || '').trim();
+									if (res === '1') {
 										clearInterval(poller);
 										location.reload();
-									} else if (attempts >= 40) {
-										clearInterval(poller);
-										btn.classList.remove('spinning');
-										document.querySelectorAll('.cbi-page-actions button').forEach(function (b) {
-											b.disabled = false;
-										});
-										ui.addNotification(null, E('p', _('Failed to generate a banIP report!')), 'error');
+									} else if (res === '0') {
+										// keep polling, no attempt counter
+									} else {
+										attempts++;
+										if (attempts >= 10) {
+											clearInterval(poller);
+											btn.classList.remove('spinning');
+											document.querySelectorAll('.cbi-page-actions button').forEach(function (b) {
+												b.disabled = false;
+											});
+											ui.addNotification(null, E('p', _('Failed to generate a banIP report!')), 'error');
+										}
 									}
 								});
 							}, 3000);

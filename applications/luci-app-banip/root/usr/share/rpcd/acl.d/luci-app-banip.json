@@ -21,11 +21,11 @@
 					"read",
 					"write"
 				],
-				"/var/run/banIP.search": [
+				"/var/run/banIP/banIP.search": [
 					"read",
 					"write"
 				],
-				"/var/run/banIP.report": [
+				"/var/run/banIP/banIP.report": [
 					"read",
 					"write"
 				]
@@ -36,10 +36,7 @@
 				"exec"
 			],
 			"file": {
-				"/var/run/banip.lock": [
-					"read"
-				],
-				"/var/run/banip_runtime.json": [
+				"/var/run/banIP/banIP.runtime.json": [
 					"read"
 				],
 				"/usr/sbin/nft -tj list sets": [
@@ -54,6 +51,9 @@
 				"/etc/init.d/banip restart": [
 					"exec"
 				],
+				"/etc/init.d/banip actual": [
+					"exec"
+				],
 				"/etc/init.d/banip report json": [
 					"exec"
 				],
@@ -64,9 +64,6 @@
 					"exec"
 				],
 				"/etc/init.d/banip content *": [
-					"exec"
-				],
-				"/etc/init.d/banip status": [
 					"exec"
 				]
 			},
